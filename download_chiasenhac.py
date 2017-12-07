@@ -21,7 +21,7 @@ proxy_user = 'ABCBCBCB%40:hehehe@proxy.company.org:1234'  # username:password@pr
 
 NEED_LOGIN = False # the last time I checked, CSN didn't require login for downloading anymore
 NEED_PROXY = True
-USING_THREAD = False # warning: downloading faster but can get error if server detects as spamming
+USING_THREAD = True # warning: downloading faster but can get error if server detects as spamming
 
 quality_map = {'flac':'Lossless_FLAC', '500':'500kbps_M4A', '320':'320kbps_MP3', '128':'128kbps_MP3', '32':'32kbps_M4A'}
 user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
@@ -86,14 +86,13 @@ def getlink(links, quality):
     return result
 
 def download_all(links, save_folder):
-    return
     if not os.path.exists(save_folder):
         os.makedirs(save_folder)
     if USING_THREAD:   
         pool = ThreadPool(4)    
         for link in links:
             pool.add_task(download_file, link, save_folder)
-            time.sleep(1)
+            time.sleep(2)
         pool.wait_completion()   
     else:
         for link in links:
