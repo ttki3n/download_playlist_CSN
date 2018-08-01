@@ -10,19 +10,27 @@ https://www.metachris.com/2016/04/python-threadpool/
 """
 class Worker(Thread):
     """ Thread executing tasks from a given tasks queue """
-    def __init__(self, tasks):
+    def __init__(self, tasks, tasks_mutex):
         Thread.__init__(self)
         self.tasks = tasks
+        self.mutex = tasks_mutex
         self.daemon = True
         self.start()
 
     def run(self):
         while True:
-            func, args, kargs = self.tasks.get()
+            with self.mutex:
+                func, args, kargs = self.tasks.get()
             try:
+                with _thread_print_lock:
+                    print "inside worker"
+                    print func
+                    print args
+                    print kargs
                 func(*args, **kargs)
             except Exception as e:
                 # An exception happened in this thread
+                print "# An exception happened in this thread"
                 print(e)
             finally:
                 # Mark this task as done, whether an exception happened or not
@@ -33,11 +41,17 @@ class ThreadPool:
     """ Pool of threads consuming tasks from a queue """
     def __init__(self, num_threads):
         self.tasks = Queue(num_threads)
+        self.tasks_mutex = threading.Lock()
         for _ in range(num_threads):
-            Worker(self.tasks)
+            print "prepare worker"
+            Worker(self.tasks, self.tasks_mutex)
 
     def add_task(self, func, *args, **kargs):
         """ Add a task to the queue """
+        print "add task"
+        print func
+        print args
+        print kargs
         self.tasks.put((func, args, kargs))
 
     def map(self, func, args_list):
