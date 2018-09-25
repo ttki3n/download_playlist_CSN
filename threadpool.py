@@ -22,11 +22,11 @@ class Worker(Thread):
             with self.mutex:
                 func, args, kargs = self.tasks.get()
             try:
-                with _thread_print_lock:
-                    print "inside worker"
-                    print func
-                    print args
-                    print kargs
+                # with _thread_print_lock:
+                    # print "inside worker"
+                    # print func
+                    # print args
+                    # print kargs
                 func(*args, **kargs)
             except Exception as e:
                 # An exception happened in this thread
@@ -43,15 +43,15 @@ class ThreadPool:
         self.tasks = Queue(num_threads)
         self.tasks_mutex = threading.Lock()
         for _ in range(num_threads):
-            print "prepare worker"
+            #print "prepare worker"
             Worker(self.tasks, self.tasks_mutex)
 
     def add_task(self, func, *args, **kargs):
         """ Add a task to the queue """
-        print "add task"
-        print func
-        print args
-        print kargs
+        # print "add task"
+        # print func
+        # print args
+        # print kargs
         self.tasks.put((func, args, kargs))
 
     def map(self, func, args_list):
@@ -70,9 +70,9 @@ if __name__ == "__main__":
 
     # Function to be executed in a thread
     def wait_delay(d):
-        print("sleeping for (%d)sec" % d)
+        #print("sleeping for (%d)sec" % d)
         while (d > 0):
-            print "Sleep 1s in", threading.current_thread()
+            #print "Sleep 1s in", threading.current_thread()
             sleep(1)
             d -= 1
 
